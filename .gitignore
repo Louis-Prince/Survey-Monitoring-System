@@ -53,6 +53,7 @@ backend/field_monitoring/db.sqlite3.bak
 .vscode/
 .vscode/settings.json
 .DS_Store
+<<<<<<< HEAD
 
 # =========================
 # Node / JavaScript
@@ -64,3 +65,6 @@ __pycache__/
 *.pyc
 
 db.sqlite3
+=======
+EOF
+>>>>>>> 7ab8fdf (feat(auth): add authentication flow)

@@ -1,0 +1,31 @@
+.table-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  width: 80%;
+  padding: 15px 14px 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+}
+.toolbar-left {
+  width:50%;
+}
+
+.toolbar-right {
+  gap: 12px;
+  width:40%;
+}
+
+@media (max-width: 600px) {
+  .table-toolbar {
+    display: block;
+    width: 100%;
+  }
+  .toolbar-left {
+    width:100%;
+  }
+  .toolbar-right {
+    width:100%;
+  }
+}

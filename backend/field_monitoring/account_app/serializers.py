@@ -65,26 +65,18 @@ class ChangePasswordSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    surveys = serializers.PrimaryKeyRelatedField(
-        queryset=Survey.objects.all(),
-        many=True,
-        required=False
-    )
     # password = serializers.CharField(write_only=True)
     
     class Meta:
         model = User
-        fields = ['id',
-                  'username',
-                  'email',
-                  'first_name',
+        fields = ['id', 
+                  'first_name', 
                   'last_name', 
-                  'phone_number', 
+                  'email', 
                   'role', 
                   'survey_types', 
-                  'surveys', 
-                  'is_active', 
-                  'is_staff'
+                  'phone_number', 
+                  'is_active'
                   ]
         
     def create(self, validated_data):
@@ -114,7 +106,7 @@ class LoginSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError({
                 "success": False,
-                "error": "Invalid email or password"
+                "message": "Invalid email or password"
             })
 
         user = authenticate(email=user.email, password=password)
@@ -122,7 +114,7 @@ class LoginSerializer(serializers.Serializer):
         if not user:
             raise serializers.ValidationError({
                 "success": False,
-                "error": "Invalid email or password"
+                "message": "Invalid email or password"
             })
 
         data["user"] = user

@@ -1,0 +1,145 @@
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  border-radius: 20px;
+  min-height: 400px;
+  border: 1px solid #cbd5e1;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.empty-state--no-search-results,
+.empty-state--no-filter-results {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.empty-state--error {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.empty-state-icon-wrapper {
+  margin-bottom: 24px;
+}
+
+.empty-state-icon {
+  font-size: 64px;
+  background: #F3F4F6;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: #B6BCC5;
+}
+
+.empty-state-image {
+  max-width: 200px;
+  max-height: 200px;
+  object-fit: contain;
+  opacity: 0.8;
+  transition: transform 0.3s ease;
+}
+
+.empty-state-image:hover {
+  transform: scale(1.05);
+}
+
+.empty-state-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+}
+
+.empty-state--error .empty-state-title {
+  color: #991b1b;
+}
+
+.empty-state-message {
+  font-size: 14px;
+  color: #475569;
+  margin-bottom: 8px;
+  max-width: 500px;
+  line-height: 1.6;
+}
+
+.empty-state--error .empty-state-message {
+  color: #7f1d1d;
+}
+
+.empty-state-highlight {
+  color: #2563eb;
+  font-weight: 600;
+  background: #eff6ff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  display: inline-block;
+  margin: 0 4px;
+}
+
+.empty-state--error .empty-state-highlight {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.empty-state-suggestion {
+  font-size: 14px;
+  color: #64748b;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px dashed #e2e8f0;
+  max-width: 400px;
+  font-style: italic;
+}
+
+.empty-state--error .empty-state-suggestion {
+  border-top-color: #fecaca;
+  color: #9ca3af;
+}
+
+@media (max-width: 768px) {
+  .empty-state {
+    padding: 40px 16px;
+    min-height: 300px;
+  }
+
+  .empty-state-title {
+    font-size: 24px;
+  }
+
+  .empty-state-message {
+    font-size: 16px;
+    padding: 0 16px;
+  }
+
+  .empty-state-icon {
+    width: 100px;
+    height: 100px;
+    font-size: 48px;
+  }
+
+  .empty-state-image {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .empty-state-title {
+    font-size: 20px;
+  }
+
+  .empty-state-message {
+    font-size: 14px;
+  }
+
+  .empty-state-suggestion {
+    font-size: 14px;
+  }
+}
