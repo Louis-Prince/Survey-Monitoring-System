@@ -1,12 +1,25 @@
-import React from 'react'
+import '../CSS/button.css';
 
-const Button = ({title}) => {
+const Button = ({
+  text,
+  onClick,
+  type = 'button',
+  variant = 'primary',
+  fullWidth = false,
+  disabled = false,
+  otherStyles = {}
+}) => {
   return (
-    <div>
-      <button>{title}</button>
-    </div>
-  )
-}
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      style={otherStyles}
+      className={`btn btn-${variant} ${fullWidth ? 'btn-full' : ''}`}
+    >
+      {text}
+    </button>
+  );
+};
 
-export default Button
-
+export default Button;
