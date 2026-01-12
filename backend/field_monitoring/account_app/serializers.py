@@ -2,7 +2,6 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from .models import User, Profile
 
-
 class ChangePasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
     old_password = serializers.CharField(write_only=True)
@@ -43,3 +42,8 @@ class ChangePasswordSerializer(serializers.Serializer):
         profile.save()
 
         return user
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'role', 'is_active', 'is_staff']

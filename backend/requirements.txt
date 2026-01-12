@@ -1,0 +1,4 @@
+django-filter
+coreapi
+pyyaml
+drf-yasg

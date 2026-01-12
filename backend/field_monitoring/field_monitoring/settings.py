@@ -26,7 +26,18 @@ SECRET_KEY = 'django-insecure-^uadk-f7yo5rif-d@k(41qqptyf4xafp7#11+gga1q-ap0!$np
 DEBUG = True
 
 ALLOWED_HOSTS = []
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# Use console backend in development to see emails in terminal
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = 'albertineayingeneye749@gmail.com'   # 👈 YOUR REAL EMAIL
+EMAIL_HOST_PASSWORD = 'qccg ntji xnmi djeh'             # 👈 GMAIL APP PASSWORD
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Application definition
 
@@ -80,6 +91,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'field_monitoring.wsgi.application'
 
+AUTH_USER_MODEL = 'account_app.User'
+# AUTH_USER_MODEL = 'account_app.User'
+# AUTH_USER_MODEL = 'account_app.User'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -141,3 +155,4 @@ STATIC_URL = 'static/'
 
 # Email settings for development
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
