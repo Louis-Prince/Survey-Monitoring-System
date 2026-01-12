@@ -7,13 +7,12 @@ def home(request):
     return HttpResponse("Welcome to the Field Monitoring System!")
 
 urlpatterns = [
-    path("account/", include("account_app.urls")),
-    # path('admin/', admin.site.urls),
-
-    path('account/', include('account_app.urls')),  # include your account app URLs
     path('', home, name='home'),
+    path("account/", include("account_app.urls")),
     path("admin/", admin.site.urls),
     path('api/accounts/', include('account_app.urls')),
+    path('api/auth/', include('account_app.urls')),
+]
    
 # root URL
-]
+
