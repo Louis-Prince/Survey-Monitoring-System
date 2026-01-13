@@ -1,18 +1,17 @@
 from rest_framework.views import APIView
 from rest_framework import status
-from .serializers import ChangePasswordSerializer, UserSerializer
+from .serializers import ChangePasswordSerializer, UserSerializer,LoginSerializer,ForgotPasswordSerializer,ResetPasswordConfirmSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import User
 import random, string
 from django.http import JsonResponse
-from django.contrib.auth import get_user_model, authenticate, login
+from django.contrib.auth import get_user_model, authenticate, login,logout
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.mail import send_mail
 from surveys_app.models import SurveyTask
 from django.http import HttpResponse
-from rest_framework.response import Response
 from django.conf import settings
 from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
@@ -21,7 +20,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 from django.utils.crypto import get_random_string
 from django.contrib.auth import get_user_model
-import json
+import json 
+from django.shortcuts import render
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
 
 
 class ChangePasswordView(APIView):
@@ -44,39 +49,20 @@ class ChangePasswordView(APIView):
 def is_admin(user):
     return user.is_staff or user.role == 'ADMIN'
 
-
-# User login
-def login_view(request):
-    username = request.POST.get("username")
-    password = request.POST.get("password")
-
-    user = authenticate(username=username, password=password)
-
-    if not user:
-        return JsonResponse({"error": "Invalid credentials"}, status=401)
-
-    # Optional: login(request, user) if session required
-    return JsonResponse({
-        "status": "success",
-        "user_id": user.id,
-        "username": user.username,
-        "role": user.role
-    })
-
 # User change password
-@login_required
-def change_password_view(request):
-    if request.method != "POST":
-        return JsonResponse({"error": "POST required"}, status=405)
 
-    new_password = request.POST.get("new_password")
-    if not new_password:
-        return JsonResponse({"error": "Missing password"}, status=400)
+# def change_password_view(request):
+#     if request.method != "POST":
+#         return JsonResponse({"error": "POST required"}, status=405)
 
-    user = request.user
-    user.set_password(new_password)
-    user.save()
-    return JsonResponse({"status": "success", "message": "Password updated"})
+#     new_password = request.POST.get("new_password")
+#     if not new_password:
+#         return JsonResponse({"error": "Missing password"}, status=400)
+
+#     user = request.user
+#     user.set_password(new_password)
+#     user.save()
+#     return JsonResponse({"status": "success", "message": "Password updated"})
 
 # Admin assigns survey to user
 @login_required
@@ -121,12 +107,7 @@ User = get_user_model()
 
 # def home(request):
 #     return HttpResponse("Welcome to the Field Monitoring System!")
-
-#LOGIN PAGE IF NEEDED
-def login_view(request):
-    return HttpResponse("Login Page")
-
-# account_app/views.py
+# # account_app/views.py
 
 def logout_view(request):
     logout(request)
@@ -136,8 +117,8 @@ def register_view(request):
     # your registration logic here IF NEEDED
     return render(request, 'account_app/register.html')
 
-def register_view(request):
-    return HttpResponse("Register Page")
+# def register_view(request):
+#     return HttpResponse("Register Page")
 
 
 @api_view(['POST'])
@@ -267,3 +248,69 @@ Admin Team
         {"message": "User created and email sent successfully"},
         status=201
     )
+
+
+
+
+class LoginView(APIView):
+    permission_classes = []
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        user = serializer.validated_data['user']
+        refresh = RefreshToken.for_user(user)
+
+        return Response({
+            "access_token": str(refresh.access_token),
+            "refresh_token": str(refresh),
+            "email": user.email,
+            
+        }, status=status.HTTP_200_OK)
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]  # Public endpoint
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+
+        try:
+            user = User.objects.get(email=email)
+
+            token = PasswordResetTokenGenerator().make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
+
+            send_mail(
+                subject="Password Reset Request",
+                message=f"Click the link to reset your password:\n{reset_link}",
+                from_email="noreply@survey-monitoring.com",
+                recipient_list=[email],
+                fail_silently=True,
+            )
+        except User.DoesNotExist:
+            pass  # Do not reveal user existence
+
+        return Response(
+            {
+                "message": "If this email exists, a password reset link has been sent."
+            },
+            status=status.HTTP_200_OK,
+        )
+class ResetPasswordConfirmView(APIView):
+    permission_classes = [AllowAny]
+    def post(self, request):
+        serializer = ResetPasswordConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Password reset successful"},
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
