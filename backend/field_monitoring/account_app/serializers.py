@@ -10,41 +10,65 @@ from django.utils.encoding import force_str
 User = get_user_model()
 
 class ChangePasswordSerializer(serializers.Serializer):
+    """
+    Serializer responsible for forcing a user to change their password
+    after first login using a generated (temporary) password.
+    """
+    # User email (used to identify which user is changing password)
+    # New password entered by the user and Confirmation of the new password
     email = serializers.EmailField()
-    old_password = serializers.CharField(write_only=True)
-    new_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True) 
     confirm_new_password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        # 1. Check user exists
+        """
+        Performs all validations before saving the new password:
+        1. Checks if user exists
+        2. Ensures user is required to change password
+        3. Confirms both passwords match
+        4. Enforces password strength rules from settings.py
+        """
+
+        # Check if user exists and Get the user's profile
         try:
             user = User.objects.get(email=data["email"])
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid email or password")
+            raise serializers.ValidationError("User not found")
+        profile = Profile.objects.get(user=user)
 
-        # 2. Check old password
-        if not user.check_password(data["old_password"]):
-            raise serializers.ValidationError("Invalid email or password")
+        # Ensure password change is required
+        if not profile.must_change_password:
+            raise serializers.ValidationError(
+                "Password already changed. Please login."
+            )
 
-        # 3. Check new passwords match
+        # Check if new password and confirmation match
         if data["new_password"] != data["confirm_new_password"]:
-            raise serializers.ValidationError("New passwords do not match")
+            raise serializers.ValidationError("Passwords do not match")
 
-        # 4. Validate password strength (settings.py rules)
+        # Validate password strength (min 8 chars, uppercase, lowercase,
+        #     number, special character — based on settings.py validators)
         validate_password(data["new_password"], user)
 
+        # Attach objects for use in save()
         data["user"] = user
+        data["profile"] = profile
         return data
 
     def save(self):
-        user = self.validated_data["user"]
-        new_password = self.validated_data["new_password"]
+        """
+        Saves the new password and updates the profile flag
+        so the user is no longer forced to change password.
+        """
 
-        user.set_password(new_password)
+        user = self.validated_data["user"]
+        profile = self.validated_data["profile"]
+
+        # Set and hash the new password
+        user.set_password(self.validated_data["new_password"])
         user.save()
 
-        # Update profile flag
-        profile = Profile.objects.get(user=user)
+        # Mark password change as completed
         profile.must_change_password = False
         profile.save()
 

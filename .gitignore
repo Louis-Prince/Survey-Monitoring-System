@@ -9,12 +9,31 @@
 # Virtual environments
 venv2/
 env/
+myenv/
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
-# Node modules
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache
+.pytest_cache
+.hypothesis
 node_modules/
 
 # IDE
