@@ -34,13 +34,16 @@ class ChangePasswordView(APIView):
 
     def post(self, request):
         serializer = ChangePasswordSerializer(data=request.data)
+
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {"message": "Password changed successfully"},
+                {"message": "Password changed successfully. Please login."},
                 status=status.HTTP_200_OK
             )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 # Check if user is admin
