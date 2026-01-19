@@ -3,8 +3,25 @@ import { useNavigate } from 'react-router-dom';
 import FormInput from '../../Components/formInput';
 import Button from '../../Components/button';
 import '../../CSS/login.css';
+import '../../CSS/createPassword.css';
 import { AuthContext } from '../../Context/Auth/AuthContext';
 import Logo from '../../assets/logo.png';
+import Loader from '../../Components/loader';
+import { CheckCircle, Info, XCircle } from 'lucide-react';
+
+const passwordRules = {
+  minLength: 8,
+  hasLetter: /[a-zA-Z]/,
+  hasNumber: /[0-9]/,
+  hasSymbol: /[^a-zA-Z0-9]/,
+};
+
+const validatePassword = (password) => ({
+  length: password.length >= passwordRules.minLength,
+  letter: passwordRules.hasLetter.test(password),
+  number: passwordRules.hasNumber.test(password),
+  symbol: passwordRules.hasSymbol.test(password),
+});
 
 const CreatePassword = ({
   title,
@@ -21,6 +38,9 @@ const CreatePassword = ({
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+
+  const passwordValidation = validatePassword(form.password);
+  const isPasswordValid = Object.values(passwordValidation).every(Boolean);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,20 +59,36 @@ const CreatePassword = ({
       setErrors(newErrors);
       return;
     }
+    if (!isPasswordValid) {
+      setErrors({ password: 'Password does not meet requirements' });
+      return;
+    }
 
-    setLoading(true);
+    // setLoading(true);
+    // const payload = { password: form.password };
+    // const response = mode === 'create' ? await createPassword(payload) : await resetPassword(payload);
 
-    const payload = { password: form.password };
+    // setLoading(false);
 
-    const response =
-      mode === 'create'
-        ? await createPassword(payload)
-        : await resetPassword(payload);
+    // if (response.success) {
+    //   navigate('/');
+    // }
 
-    setLoading(false);
-
-    if (response.success) {
-      navigate('/');
+    try {
+      setLoading(true);
+      const payload = { password: form.password };
+      const response = mode === 'create' ? await createPassword(payload) : await resetPassword(payload);
+  
+      if (response.success) {
+        setLoading(false);
+        navigate('/');
+      } else {
+        setLoading(false);
+      }
+    } catch (err) {
+      setErrors({ general: err.message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -72,6 +108,34 @@ const CreatePassword = ({
           placeholder="Enter new password"
           error={errors.password}
         />
+        {form.password.length > 0 &&(<div className="password-rules">
+          <div className="password-rules-title">
+            <Info size={16} />
+            <span>Password requirements</span>
+          </div>
+        
+          <ul>
+            <li className={passwordValidation.length ? 'valid' : 'invalid'}>
+              {passwordValidation.length ? <CheckCircle size={14} /> : <XCircle size={14} />}
+              At least 8 characters
+            </li>
+        
+            <li className={passwordValidation.letter ? 'valid' : 'invalid'}>
+              {passwordValidation.letter ? <CheckCircle size={14} /> : <XCircle size={14} />}
+              Contains letters
+            </li>
+        
+            <li className={passwordValidation.number ? 'valid' : 'invalid'}>
+              {passwordValidation.number ? <CheckCircle size={14} /> : <XCircle size={14} />}
+              Contains numbers
+            </li>
+        
+            <li className={passwordValidation.symbol ? 'valid' : 'invalid'}>
+              {passwordValidation.symbol ? <CheckCircle size={14} /> : <XCircle size={14} />}
+              Contains symbols
+            </li>
+          </ul>
+        </div>)}
 
         <FormInput
           label="Confirm Password"
@@ -86,9 +150,10 @@ const CreatePassword = ({
         <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
           <Button
             type="submit"
-            text={loading ? 'Processing...' : 'Create New Password'}
+            text="Create New Password"
           />
         </div>
+        {loading && <Loader/>}
       </form>
     </div>
   );

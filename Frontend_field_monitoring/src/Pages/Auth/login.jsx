@@ -1,96 +1,76 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormInput from '../../Components/formInput';
 import Button from '../../Components/button';
 import '../../CSS/login.css';
 import Logo from '../../assets/logo.png';
-import { CircleX } from 'lucide-react';
-import Modal from '../../Components/modal';
+import { CircleX, Info } from 'lucide-react';
+import { AuthContext } from '../../Context/Auth/AuthContext';
 import Loader from '../../Components/loader';
 
 const Login = () => {
   const navigate = useNavigate();
-
-  // const [showModal, setShowModal] = useState(true);
-  // const [loading, setLoading] = useState(false);
+  const { login } = useContext(AuthContext);
 
   const [form, setForm] = useState({
     email: '',
     password: ''
   });
 
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-    general: ''
-  });
+  const [errors, setErrors] = useState({});
+  const [isFirstTime, setIsFirstTime] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setErrors({ ...errors, [e.target.name]: '', general: '' });
+    setErrors({});
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     let newErrors = {};
+    if (!form.email) newErrors.email = 'Email is required';
+    if (!form.password) newErrors.password = 'Password is required';
 
-    if (!form.email) {
-      newErrors.email = 'Email is required';
+    if (!form.email && !form.password) {
+      setErrors({ general: 'Email and password are required' });
+      return;
     }
-    if (!form.password) {
-      newErrors.password = 'Password is required';
-    }
-
     if (Object.keys(newErrors).length > 0) {
-      setErrors({ ...errors, ...newErrors });
+      setErrors(newErrors);
       return;
     }
-
-    // Replace with real API call
-    const response = {
-      success: false,
-      message: 'Invalid email or password'
-    };
-
-    if (!response.success) {
-      setErrors({
-        ...errors,
-        general: response.message
-      });
-      return;
+  
+    try {
+      setLoading(true);
+  
+      const response = await login(form);
+      setIsFirstTime(response.is_temporary_password);
+  
+      if (response.is_temporary_password) {
+        navigate('/create-password');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (err) {
+      setErrors({ general: err.message });
+    } finally {
+      setLoading(false);
     }
-
-    // On success
-    localStorage.setItem(
-      'user',
-      JSON.stringify({ has_changed_password: false })
-    );
-    navigate('/dashboard');
   };
-
-  // const handleConfirm = () => {
-  //   setShowModal(false);
-  // };
 
   return (
     <div className="auth-form-container">
       <form className="auth-form-card" onSubmit={handleLogin}>
         <img src={Logo} alt="Logo" className="auth-form-logo" />
 
-        <h2 className="auth-form-subtitle">
-          Centralized Survey Monitoring System
-        </h2>
+        <h2 className="welcome-text-title">{isFirstTime ? 'Welcome' : ''}</h2>
+        <h2 className="auth-form-subtitle">Centralized Survey Monitoring System</h2>
 
         {errors.general && (
           <div className="auth-form-error-section">
-            <div>
-            <CircleX size={18} className="auth-form-error-icon" />
-            </div>
-            <div>
-              <h4 className='err-text'>Error</h4>
-              <p style={{ fontSize: '12px' }}>{errors.general}</p>
-            </div>
+            <CircleX size={18} /><p>{errors.general}</p>
           </div>
         )}
 
@@ -99,51 +79,43 @@ const Login = () => {
           name="email"
           value={form.email}
           onChange={handleChange}
-          placeholder="Enter Email address"
+          placeholder="Enter email address"
           error={errors.email}
         />
 
         <FormInput
-          label="Password"
+          label={isFirstTime ? 'Temporary Password' : 'Password'}
           type="password"
           name="password"
           value={form.password}
           onChange={handleChange}
-          placeholder="Enter Password"
+          placeholder="Enter password"
           error={errors.password}
         />
 
-        <p className="forgot-password-text" onClick={() => navigate('/forgot-password')}>
-          Forgot password?
-        </p>
+        {!isFirstTime && (
+          <p className="forgot-password-text" onClick={() => navigate('/forgot-password')}>
+            Forgot password?
+          </p>
+        )}
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}>
-          <Button text="Login" type="submit"  />
+        {isFirstTime && (
+          <div className="auth-helper-div">
+            <Info size={40} fill='#2259A9' color='white'/>
+            <p className="auth-helper-text">Enter the temporary password sent to your email. You'll create a new password in the next step.</p>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <Button
+            text={isFirstTime ? 'Proceed' : 'Login'}
+            type="submit"
+            disabled={loading}
+          />
         </div>
+        {loading && <Loader/>}
       </form>
-      {/* <Modal
-        isOpen={showModal}
-        title="Success"
-        message="Your changes have been successfully saved."
-        icon="success"
-        iconClose
-        buttons={[
-          {
-            label: 'Cancel',
-            style: 'btn-secondary',
-            action: () => setShowModal(false)
-          },
-          {
-            label: 'Confirm',
-            style: 'btn-primary',
-            action: handleConfirm
-          }
-        ]}
-        onClose={() => setShowModal(false)}
-      />
-      {loading && <Loader />} */}
     </div>
-    
   );
 };
 

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useContext  } from "react";
 import FormInput from "../../Components/formInput";
 import { Plus, X, User, Users, Shield } from 'lucide-react';
 import '../../CSS/createUser.css';
 import Button from "../../Components/button";
+import { UserContext } from "../../Context/User/UserContext";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,9 @@ const CreateUser = () => {
 
   const isRoleSelected = Boolean(formData.role);
   const isMultiSurveyRole = formData.role === 'admin' || formData.role === 'supervisor';
+
+  const { createUser } = useContext (UserContext);
+
 
   const roleOptions = [
     { value: 'admin', label: 'Administrator' },
