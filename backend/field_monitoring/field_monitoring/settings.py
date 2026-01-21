@@ -56,11 +56,7 @@ INSTALLED_APPS = [
     'surveys_app',
     
 ]
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
-}
+
 AUTH_USER_MODEL = 'account_app.User'
 
 MIDDLEWARE = [
@@ -166,6 +162,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),

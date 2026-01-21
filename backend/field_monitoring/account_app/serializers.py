@@ -12,62 +12,52 @@ User = get_user_model()
 
 class ChangePasswordSerializer(serializers.Serializer):
     """
-    Forces a user to change their password once after first login
-    using a system-generated (temporary) password.
+    Allows authenticated user to change password ONCE
+    after first login using token authentication.
     """
 
-    email = serializers.EmailField(write_only=True)
     new_password = serializers.CharField(write_only=True)
     confirm_new_password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
-        email = attrs.get("email")
-
-        # Ensure user exists (email is UNIQUE now)
-        try:
-            user = User.objects.get(email=email)
-        except User.DoesNotExist:
-            raise serializers.ValidationError({"email": "User not found"})
+        user = self.context["request"].user
 
         # Ensure profile exists
-        # AUTO-CREATE PROFILE IF MISSING
-        profile = Profile.objects.get_or_create(
+        profile, created = Profile.objects.get_or_create(
             user=user,
             defaults={"must_change_password": True}
-            )
-        # Ensure password change is required (ONLY ONCE)
+        )
+
+        # Allow only once
         if not profile.must_change_password:
             raise serializers.ValidationError(
                 "Password has already been changed. Please login."
             )
 
-        # Ensure passwords match
+        # Passwords must match
         if attrs["new_password"] != attrs["confirm_new_password"]:
             raise serializers.ValidationError(
                 {"confirm_new_password": "Passwords do not match"}
             )
 
-        # Validate password strength (settings.py validators)
+        # Validate strength
         validate_password(attrs["new_password"], user)
 
-        # Attach for save()
-        attrs["user"] = user
         attrs["profile"] = profile
         return attrs
 
     def save(self):
-        user = self.validated_data["user"]
+        user = self.context["request"].user
         profile = self.validated_data["profile"]
 
-        # Set new password
         user.set_password(self.validated_data["new_password"])
         user.save()
 
-        # Disable future password changes
         profile.must_change_password = False
         profile.save(update_fields=["must_change_password"])
 
         return user
+
 
 
 class UserSerializer(serializers.ModelSerializer):

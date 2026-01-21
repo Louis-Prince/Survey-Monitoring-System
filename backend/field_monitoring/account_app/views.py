@@ -27,13 +27,17 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from rest_framework.permissions import IsAuthenticated
+
 
 class ChangePasswordView(APIView):
-    authentication_classes = []
-    permission_classes = []
+    permission_classes = [IsAuthenticated]  # 🔥 REQUIRED
 
     def post(self, request):
-        serializer = ChangePasswordSerializer(data=request.data)
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={"request": request}
+        )
 
         if serializer.is_valid():
             serializer.save()
@@ -43,6 +47,7 @@ class ChangePasswordView(APIView):
             )
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
