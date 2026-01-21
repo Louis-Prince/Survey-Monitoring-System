@@ -267,7 +267,7 @@ class LoginView(APIView):
             "access_token": str(refresh.access_token),
             "refresh_token": str(refresh),
             "email": user.email,
-            
+            "is_temporary_password": True 
         }, status=status.HTTP_200_OK)
 
 class ForgotPasswordView(APIView):
@@ -290,9 +290,9 @@ class ForgotPasswordView(APIView):
             send_mail(
                 subject="Password Reset Request",
                 message=f"Click the link to reset your password:\n{reset_link}",
-                from_email="noreply@survey-monitoring.com",
+                from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
-                fail_silently=True,
+                fail_silently=False,
             )
         except User.DoesNotExist:
             pass  # Do not reveal user existence
