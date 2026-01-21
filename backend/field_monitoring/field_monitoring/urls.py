@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from django.http import HttpResponse  # needed for simple home view
+from rest_framework.authtoken.views import obtain_auth_token
 
 # Simple home page view
 def home(request):
@@ -12,6 +13,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path('api/accounts/', include('account_app.urls')),
     path('api/auth/', include('account_app.urls')),
+    path("api/token/", obtain_auth_token)
 ]
    
 # root URL
