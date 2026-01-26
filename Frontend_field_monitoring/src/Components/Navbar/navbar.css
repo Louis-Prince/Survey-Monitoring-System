@@ -1,0 +1,26 @@
+.navbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 240px;
+  right: 0;
+  height: 64px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  z-index: 999; 
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    left: 72px;
+  }
+}

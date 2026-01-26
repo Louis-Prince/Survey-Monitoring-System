@@ -1,13 +1,13 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import FormInput from '../../Components/formInput';
-import Button from '../../Components/button';
-import '../../CSS/login.css';
-import '../../CSS/createPassword.css';
-import { AuthContext } from '../../Context/Auth/AuthContext';
-import Logo from '../../assets/logo.png';
-import Loader from '../../Components/loader';
+import '../Login/login.css';
+import './createPassword.css';
+import Logo from '../../../assets/logo.png';
 import { CheckCircle, Info, XCircle } from 'lucide-react';
+import { AuthContext } from '../../../Context/Auth/AuthContext';
+import Loader from '../../../Components/Loader/loader';
+import Button from '../../../Components/Button/button';
+import FormInput from '../../../Components/FormInput/FormInput';
 
 const passwordRules = {
   minLength: 8,

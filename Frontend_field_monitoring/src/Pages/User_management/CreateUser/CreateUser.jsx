@@ -1,9 +1,9 @@
 import { useState, useContext  } from "react";
-import FormInput from "../../Components/formInput";
 import { Plus, X, User, Users, Shield } from 'lucide-react';
-import '../../CSS/createUser.css';
-import Button from "../../Components/button";
-import { UserContext } from "../../Context/User/UserContext";
+import './createUser.css';
+import { UserContext } from "../../../Context/User/UserContext";
+import FormInput from "../../../Components/FormInput/FormInput";
+import Button from "../../../Components/Button/button";
 
 const CreateUser = () => {
   const [formData, setFormData] = useState({
@@ -273,9 +273,9 @@ const CreateUser = () => {
                 </div>
           
                 {isMultiSurveyRole && (
-                  <button type="button" onClick={handleAddSurvey} disabled={!currentSurvey} className="btn-add-survey">
+                  <Button type="button" onClick={handleAddSurvey} disabled={!currentSurvey} className="btn-add-survey">
                     <Plus className="btn-icon" /> Add Survey
-                  </button>
+                  </Button>
                 )}
               </div>
           

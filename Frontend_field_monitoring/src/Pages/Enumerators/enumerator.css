@@ -1,0 +1,15 @@
+.enumerators-page {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+.enumerator-container-title{
+    font-weight: 600;
+    font-size: 20px;
+}
+
+.enumerator-container-description{
+    font-size: 14px;
+    padding-top: 4px;
+    padding-bottom: 18px;
+}

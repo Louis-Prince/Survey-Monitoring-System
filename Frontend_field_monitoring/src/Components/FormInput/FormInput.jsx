@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import '../CSS/formInput.css';
+import './formInput.css';
 
 const FormInput = ({ 
   type = 'text',
@@ -14,7 +14,8 @@ const FormInput = ({
   error,
   disabled = false,
   helperText,
-  rows = 4
+  rows = 4,
+  otherStyles = {}
 }) => {
   const isPassword = type === 'password';
   const [showPassword, setShowPassword] = useState(false);
@@ -30,6 +31,7 @@ const FormInput = ({
             className={`form-input ${error ? 'form-input-error' : ''} ${disabled ? 'form-input-disabled' : ''}`}
             disabled={disabled}
             required={required}
+            style={otherStyles}
           >
             <option value="">Select {label}</option>
             {options.map((option, index) => (
@@ -51,6 +53,7 @@ const FormInput = ({
             disabled={disabled}
             required={required}
             rows={rows}
+            style={otherStyles}
           />
         );
 
@@ -64,6 +67,7 @@ const FormInput = ({
               onChange={onChange}
               className="form-checkbox"
               disabled={disabled}
+              style={otherStyles}
             />
             <label className="checkbox-label">{label}</label>
           </div>
@@ -82,6 +86,7 @@ const FormInput = ({
                   onChange={onChange}
                   className="form-radio"
                   disabled={disabled}
+                  style={otherStyles}
                 />
                 <label className="radio-label">{option.label}</label>
               </div>
@@ -101,6 +106,7 @@ const FormInput = ({
               className={`form-input ${error ? 'form-input-error' : ''} ${disabled ? 'form-input-disabled' : ''}`}
               disabled={disabled}
               required={required}
+              style={otherStyles}
             />
 
             {isPassword && (
