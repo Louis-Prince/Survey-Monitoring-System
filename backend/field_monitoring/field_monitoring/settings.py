@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'account_app',
     'rest_framework',
     'surveys_app',
+    'corsheaders',
     
 ]
 
@@ -67,6 +68,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware'
 ]
 
 ROOT_URLCONF = 'field_monitoring.urls'
@@ -172,5 +174,12 @@ SIMPLE_JWT = {
 DEFAULT_FROM_EMAIL = "noreply@survey-monitoring.com"
 PASSWORD_RESET_TIMEOUT = 3600  # seconds (1 hour)
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
 
+CORS_ALLOW_CREDENTIALS = True
 
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers)

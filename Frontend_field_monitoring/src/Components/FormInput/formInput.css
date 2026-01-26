@@ -1,0 +1,96 @@
+.form-group {
+  margin-bottom: 16px;
+}
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 8px;
+}
+.required-asterisk {
+  color: #ef4444;
+  margin-left: 6px;
+}
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  transition: all 0.2s;
+  background-color: white;
+  font-family: 'Poppins', sans-serif;
+}
+.form-input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+.form-input-error {
+  border-color: #ef4444;
+}
+.form-input-disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+.form-textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+.error-text {
+  color: #ef4444;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.helper-text {
+  color: #6b7280;
+  font-size: 12px;
+  margin-top: 4px;
+}
+.checkbox-container {
+  display: flex;
+  align-items: center;
+}
+.form-checkbox {
+  width: 16px;
+  height: 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.checkbox-label {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radio-container {
+  display: flex;
+  align-items: center;
+}
+.form-radio {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+.radio-label {
+  margin-left: 8px;
+  font-size: 14px;
+  color: #374151;
+}
+.input-wrapper {
+  position: relative;
+}
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 58%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #6b7280;
+}
