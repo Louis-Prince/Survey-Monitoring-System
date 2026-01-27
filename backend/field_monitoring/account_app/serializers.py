@@ -51,6 +51,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         profile = self.validated_data["profile"]
 
         user.set_password(self.validated_data["new_password"])
+        user.is_temporary_password = False
         user.save()
 
         profile.must_change_password = False

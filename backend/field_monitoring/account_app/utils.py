@@ -17,3 +17,10 @@ def send_credentials_email(user, password):
         recipient_list=[user.email],
         fail_silently=False,
     )
+
+def determine_dashboard(user):
+    if user.role == 'ADMIN':
+        return 'admin_dashboard'
+    elif user.role == 'F_SUPPERVISOR':
+        return 'supervisor_dashboard'
+    return 'enumerator_dashboard'

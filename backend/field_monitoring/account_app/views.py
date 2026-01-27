@@ -28,7 +28,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from rest_framework.permissions import IsAuthenticated
-
+from .utils import determine_dashboard
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]  # 🔥 REQUIRED
@@ -272,7 +272,8 @@ class LoginView(APIView):
             "access_token": str(refresh.access_token),
             "refresh_token": str(refresh),
             "email": user.email,
-            "is_temporary_password": True 
+            "is_temporary_password": user.is_temporary_password,
+            "Role": user.role,
         }, status=status.HTTP_200_OK)
 
 class ForgotPasswordView(APIView):

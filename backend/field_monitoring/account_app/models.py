@@ -29,7 +29,7 @@ class User(AbstractUser):
     )
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ENUMERATOR')
-
+    is_temporary_password = models.BooleanField(default=True)
     # Fix reverse accessor clashes
     groups = models.ManyToManyField(
         Group,
