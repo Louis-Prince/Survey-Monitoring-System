@@ -1,29 +1,20 @@
 from django.urls import path
-from .views import ChangePasswordView
+from .views import (
+    list_users_view,
+    create_user_view,      
+    change_password_view,
+    me_view,
+    assign_survey_view,
+    login_view
+)
 
 urlpatterns = [
-    
+    path('users/', list_users_view, name='list_users'),
+    path('create/', create_user_view, name='create_user'),  # <-- updated
+    path('change-password/', change_password_view, name='change_password'),
+    path('me/', me_view, name='me'),
+    path('assign-survey/', assign_survey_view, name='assign_survey'),
+    path('login/', login_view, name='login'),
 ]
 
-from . import views
-from .views import create_user_view, login_view, change_password_view
-from .views import create_user_view, login_view, change_password_view, assign_survey_view
-from.views import list_users
 
-urlpatterns = [
-    # path("users/create/", create_user_view),
-    path('users/create/', create_user_view, name='create-user'),
-    path('create/', create_user_view),
-    path('login/', login_view),
-    # path('change-password/', change_password_view),
-    path('assign-survey/', assign_survey_view),
-    
-    # path('users/', list_users),  # API endpoint
-    path('login/', views.login_view, name='login'),
-    path('logout/', views.logout_view, name='logout'),
-    path('register/', views.register_view, name='register'),
-    path('create-user/', views.create_user_api, name='create-user'),
-    #path('users/create/', create_user_api),
-    # path('users/create/', create_user_view, name='create-user'),
-    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
-]

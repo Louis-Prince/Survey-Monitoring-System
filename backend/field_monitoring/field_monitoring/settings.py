@@ -26,17 +26,16 @@ SECRET_KEY = 'django-insecure-^uadk-f7yo5rif-d@k(41qqptyf4xafp7#11+gga1q-ap0!$np
 DEBUG = True
 
 ALLOWED_HOSTS = []
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Use console backend in development to see emails in terminal
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = 'albertineayingeneye749@gmail.com'   # 👈 YOUR REAL EMAIL
-EMAIL_HOST_PASSWORD = 'qccg ntji xnmi djeh'             # 👈 GMAIL APP PASSWORD
+EMAIL_HOST_PASSWORD = 'fnai wsjd uroy ipwh'            # 👈 GMAIL APP PASSWORD
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # Application definition
@@ -56,8 +55,8 @@ INSTALLED_APPS = [
     
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny',  # Public by default
     ],
 }
 AUTH_USER_MODEL = 'account_app.User'
@@ -92,7 +91,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'field_monitoring.wsgi.application'
 
 AUTH_USER_MODEL = 'account_app.User'
-# AUTH_USER_MODEL = 'account_app.User'
 # AUTH_USER_MODEL = 'account_app.User'
 
 # Database
@@ -154,5 +152,5 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 # Email settings for development
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
