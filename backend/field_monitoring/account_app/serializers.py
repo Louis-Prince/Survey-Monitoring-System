@@ -77,12 +77,18 @@ class LoginSerializer(serializers.Serializer):
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            raise serializers.ValidationError("Invalid email or password")
+            raise serializers.ValidationError({
+                "success": False,
+                "error": "Invalid email or password"
+            })
 
         user = authenticate(username=user.username, password=password)
 
         if not user:
-            raise serializers.ValidationError("Invalid email or password")
+            raise serializers.ValidationError({
+                "success": False,
+                "error": "Invalid email or password"
+            })
 
         data["user"] = user
         return data
@@ -122,7 +128,10 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         # 🔍 DEBUG END
 
         if not is_valid:
-            raise serializers.ValidationError("Invalid or expired token")
+            raise serializers.ValidationError({
+                "success": False,
+                "error": "Invalid or expired token"
+            })
 
         self.user = user
         return data
