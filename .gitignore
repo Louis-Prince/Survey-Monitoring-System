@@ -1,28 +1,30 @@
-
-# Environment variables
-
-.venv
-.env
-.env.local
-.env.*.local
-
-# Virtual environments
-venv2/
+# =========================
+# Python / Virtual Environments
+# =========================
+# Standard venvs
+venv/
 env/
+ENV/
+.venv/
+venv.bak/
+env.bak/
 myenv/
+backend/venv/
+
+# Python compiled files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-.venv
+
+# pip logs
 pip-log.txt
 pip-delete-this-directory.txt
+
+# =========================
+# Testing / Coverage
+# =========================
 .tox/
 .coverage
 .coverage.*
@@ -30,16 +32,27 @@ pip-delete-this-directory.txt
 nosetests.xml
 coverage.xml
 *.cover
-*.log
-.mypy_cache
 .pytest_cache
+.mypy_cache
 .hypothesis
-node_modules/
 
-# IDE
+# =========================
+# Django / Databases
+# =========================
+*.sqlite3
+*.db
+db.sqlite3.bak
+backend/field_monitoring/db.sqlite3.bak
+*.log
+
+# =========================
+# IDE / Editor
+# =========================
 .vscode/
-.idea/
-
-# OS files
+.vscode/settings.json
 .DS_Store
-EOF
+
+# =========================
+# Node / JavaScript
+# =========================
+node_modules/
