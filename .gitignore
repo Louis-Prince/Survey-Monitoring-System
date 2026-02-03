@@ -1,20 +1,17 @@
-# Virtual environments
 myenv/
 venv/
-env/
-ENV/
-.venv
-env.bak/
-venv.bak/
-
-# Python cache files
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .Python
-
-# Testing / coverage
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
 .tox/
 .coverage
 .coverage.*
@@ -23,26 +20,14 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
+.git
+.mypy_cache
 .pytest_cache
 .hypothesis
-
-# Database
+node_modules/
 *.sqlite3
 *.db
-
-# Django media / static files
-media/
-staticfiles/
-
-# Local settings
-local_settings.py
-
-# IDE / editor
-.vscode/
 .DS_Store
-
-# Node / frontend (if any)
-node_modules/
-
-# Git (usually ignored by default)
-.git
+.vscode/settings.json
+"backend/venv/" 
+"backend/field_monitoring/db.sqlite3.bak" 
