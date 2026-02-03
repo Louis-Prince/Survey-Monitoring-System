@@ -215,6 +215,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'drf_yasg',
+    
 
     # Local apps
     'account_app',
@@ -225,6 +226,8 @@ INSTALLED_APPS = [
 # Custom User model
 # -------------------------------
 AUTH_USER_MODEL = 'account_app.User'
+
+
 
 # -------------------------------
 # Middleware

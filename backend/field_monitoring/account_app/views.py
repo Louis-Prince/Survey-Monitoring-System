@@ -13,7 +13,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
-from surveys_app.models import Survey, SurveyTask
+from surveys_app.models import Survey
 from .serializers import (
     ChangePasswordSerializer,
     UserSerializer,
@@ -207,9 +207,9 @@ def create_user_view(request):
     send_invite = data.get("send_email_invitation", True)
 
     if not username or User.objects.filter(username=username).exists():
-        return Response({"success": False, "message": "Username required or already exists"}, status=400)
+        return Response({"success": False, "message": "Username already exists"}, status=400)
     if not email or User.objects.filter(email=email).exists():
-        return Response({"success": False, "message": "Email required or already exists"}, status=400)
+        return Response({"success": False, "message": "Email  already exists"}, status=400)
 
     from django.utils.crypto import get_random_string
     password = get_random_string(10)
@@ -236,8 +236,16 @@ def create_user_view(request):
             fail_silently=False,
         )
 
-    return Response({"success": True, "message": "User created successfully", "data": UserSerializer(user).data}, status=201)
+    # Define the response directly in the view
+    response_data = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "role": user.role,
+        "survey_types": user.survey_types
+    }
 
+    return Response({"success": True, "message": "User created successfully", "data": response_data}, status=201)
 # -------------------------------
 # Survey assignment
 # -------------------------------

@@ -15,6 +15,8 @@ from .views import (
 
 urlpatterns = [
     # Function-based views
+    path('create/', create_user_view, name='create_user_simple'),
+
     path('users/', list_users_view, name='list_users'),
     path('users/create/', create_user_view, name='create_user'),
     path('change-password/', change_password_view, name='change_password'),

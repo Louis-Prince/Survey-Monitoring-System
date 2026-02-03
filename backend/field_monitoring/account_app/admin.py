@@ -4,12 +4,11 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, Profile
-from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from surveys_app.models import Survey
 from django import forms
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from surveys_app.models import Survey
+from django.contrib.auth.models import AbstractUser, UserManager
 
     
 class CustomUserCreationForm(forms.ModelForm):
