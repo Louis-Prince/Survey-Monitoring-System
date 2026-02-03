@@ -269,11 +269,15 @@ class LoginView(APIView):
         refresh = RefreshToken.for_user(user)
 
         return Response({
-            "access_token": str(refresh.access_token),
-            "refresh_token": str(refresh),
-            "email": user.email,
-            "is_temporary_password": user.is_temporary_password,
-            "Role": user.role,
+            "success": True,
+            "message": "Login successful",
+            "data": {
+                "access_token": str(refresh.access_token),
+                "refresh_token": str(refresh),
+                "email": user.email,
+                "is_temporary_password": user.is_temporary_password,
+                "Role": user.role,
+            }
         }, status=status.HTTP_200_OK)
 
 class ForgotPasswordView(APIView):
@@ -305,6 +309,7 @@ class ForgotPasswordView(APIView):
 
         return Response(
             {
+                "success": True,
                 "message": "If this email exists, a password reset link has been sent."
             },
             status=status.HTTP_200_OK,
@@ -316,7 +321,10 @@ class ResetPasswordConfirmView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {"message": "Password reset successful"},
+                {
+                    
+                    "success": True,
+                    "message": "Password reset successful"},
                 status=status.HTTP_200_OK
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
