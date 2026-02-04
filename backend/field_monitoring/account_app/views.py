@@ -22,7 +22,41 @@ from .serializers import (
     ResetPasswordConfirmSerializer
 )
 
+
 User = get_user_model()
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]  # 🔥 REQUIRED
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(
+            data=request.data,
+            context={"request": request}
+        )
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"success": True,
+                 "message": "Password changed successfully. Please login."},
+                status=status.HTTP_200_OK
+            )
+            
+            
+        error_msg = serializer.errors
+        if isinstance(error_msg, list):
+            error_msg = error_msg[0]
+        elif isinstance(error_msg, dict):
+            error_msg = next(iter(error_msg.values()))[0]
+
+        return Response(
+            {
+                "success": False,
+                "error": error_msg
+            },
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
 
 # -------------------------------
 # Helper function
@@ -37,13 +71,15 @@ def home_view(request):
     return HttpResponse("Welcome to the Field Monitoring System!")
 
 class LoginView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = []
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         user = serializer.validated_data['user']
         refresh = RefreshToken.for_user(user)
+
         return Response({
             "success": True,
             "message": "Login successful",
@@ -55,7 +91,6 @@ class LoginView(APIView):
                 "Role": user.role,
             }
         }, status=status.HTTP_200_OK)
-
 # -------------------------------
 # Logout
 # -------------------------------
@@ -96,16 +131,9 @@ def create_user_api(request):
         "user": UserSerializer(user).data
     })
 
-
-class ChangePasswordView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request):
-        serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Password changed successfully. Please login."}, status=200)
-        return Response(serializer.errors, status=400)
+# -------------------------------
+# Password management
+# -------------------------------
 
 class ForgotPasswordView(APIView):
     permission_classes = [AllowAny]
