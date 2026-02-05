@@ -1,4 +1,7 @@
 from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework import serializers
+from .models import User, Profile
 from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
@@ -9,7 +12,6 @@ from .models import Profile
 from surveys_app.models import Survey
 
 User = get_user_model()
-
 
 class ChangePasswordSerializer(serializers.Serializer):
     """
@@ -36,19 +38,21 @@ class ChangePasswordSerializer(serializers.Serializer):
 
         # Passwords must match
         if attrs["new_password"] != attrs["confirm_new_password"]:
-            raise serializers.ValidationError(
-                {"confirm_new_password": "Passwords do not match"}
-            )
+            raise serializers.ValidationError("Passwords do not match")
 
         # Validate strength
-        validate_password(attrs["new_password"], user)
+        try:
+            validate_password(attrs["new_password"], user)
+        except DjangoValidationError as e:
+            raise serializers.ValidationError(e.messages[0])
 
-        attrs["profile"] = profile
         return attrs
 
     def save(self):
         user = self.context["request"].user
-        profile = self.validated_data["profile"]
+
+        # 🔑 FETCH PROFILE HERE (NOT from validated_data)
+        profile = Profile.objects.get(user=user)
 
         user.set_password(self.validated_data["new_password"])
         user.is_temporary_password = False

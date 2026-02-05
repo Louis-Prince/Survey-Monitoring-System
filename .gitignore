@@ -6,6 +6,7 @@ venv/
 env/
 ENV/
 .venv/
+.env
 venv.bak/
 env.bak/
 myenv/
@@ -57,3 +58,9 @@ backend/field_monitoring/db.sqlite3.bak
 # Node / JavaScript
 # =========================
 node_modules/
+
+__pycache__/
+
+*.pyc
+
+db.sqlite3

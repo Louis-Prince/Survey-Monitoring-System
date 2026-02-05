@@ -178,8 +178,9 @@ from pathlib import Path
 from datetime import timedelta
 import os
 from dotenv import load_dotenv
-
+from decouple import config
 load_dotenv()
+
 
 # -------------------------------
 # Base directory
@@ -220,9 +221,7 @@ INSTALLED_APPS = [
     # Third-party apps
     'rest_framework',
     'rest_framework.authtoken',
-    'drf_yasg',
-    
-
+    'drf_yasg', 
     # Local apps
     'account_app',
     'surveys_app',
@@ -275,9 +274,13 @@ WSGI_APPLICATION = 'field_monitoring.wsgi.application'
 # -------------------------------
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
+        }
 }
 
 # -------------------------------
@@ -335,5 +338,10 @@ SIMPLE_JWT = {
 }
 # DEFAULT_FROM_EMAIL = "noreply@survey-monitoring.com"
 PASSWORD_RESET_TIMEOUT = 3600  # seconds (1 hour)
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 
