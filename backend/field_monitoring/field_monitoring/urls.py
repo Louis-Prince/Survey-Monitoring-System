@@ -10,7 +10,7 @@ def home(request):
 urlpatterns = [
     path('', home, name='home'),
     path('admin/', admin.site.urls),
-    path('api/', include('account_app.urls')),   #ONLY THIS
+    # path('api/', include('account_app.urls')),   #ONLY THIS
     path('api/accounts/', include('account_app.urls')),
     path('api/auth/', include('account_app.urls')),
     path("api/token/", obtain_auth_token)

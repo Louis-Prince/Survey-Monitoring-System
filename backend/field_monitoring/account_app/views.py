@@ -36,24 +36,6 @@ def is_admin(user):
 def home_view(request):
     return HttpResponse("Welcome to the Field Monitoring System!")
 
-# -------------------------------
-# Authentication & Login
-# -------------------------------
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def login_view(request):
-    email = request.data.get("email")
-    password = request.data.get("password")
-    if not email or not password:
-        return Response({"error": "Email and password are required"}, status=400)
-
-    user = authenticate(request, email=email, password=password)
-    if not user:
-        return Response({"error": "Invalid credentials"}, status=401)
-
-    login(request, user)
-    return Response({"message": "Login successful"}, status=200)
-
 class LoginView(APIView):
     permission_classes = [AllowAny]
 
@@ -65,12 +47,12 @@ class LoginView(APIView):
         return Response({
             "success": True,
             "message": "Login successful",
-            "data": {
+            "data":{
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
                 "email": user.email,
-                "is_temporary_password": getattr(user, "is_temporary_password", True),
-                "role": getattr(user, "role", None),
+                "is_temporary_password":user.is_temporary_password,
+                "Role": user.role,
             }
         }, status=status.HTTP_200_OK)
 
@@ -114,17 +96,6 @@ def create_user_api(request):
         "user": UserSerializer(user).data
     })
 
-# -------------------------------
-# Password management
-# -------------------------------
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def change_password_view(request):
-    serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response({"message": "Password changed successfully"}, status=200)
-    return Response(serializer.errors, status=400)
 
 class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
@@ -152,7 +123,12 @@ class ForgotPasswordView(APIView):
 
             send_mail(
                 subject="Password Reset Request",
-                message=f"Click the link to reset your password:\n{reset_link}",
+                message=f"""
+Hello {user.username},
+
+we received a request to reset your password for your survey monitoring system account.
+
+Click this link to reset your password:\n{reset_link}""",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
                 fail_silently=False,

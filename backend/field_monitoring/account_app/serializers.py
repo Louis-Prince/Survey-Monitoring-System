@@ -88,7 +88,7 @@ class LoginSerializer(serializers.Serializer):
                 "error": "Invalid email or password"
             })
 
-        user = authenticate(username=user.username, password=password)
+        user = authenticate(email=user.email, password=password)
 
         if not user:
             raise serializers.ValidationError({
@@ -117,7 +117,7 @@ class ResetPasswordConfirmSerializer(serializers.Serializer):
         if not token_generator.check_token(user, data["token"]):
             raise serializers.ValidationError({
                 "success": False,
-                "error": "Invalid or expired token"
+                "message": "Invalid or expired token"
             })
 
         self.user = user

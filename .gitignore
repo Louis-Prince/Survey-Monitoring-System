@@ -10,6 +10,7 @@ venv.bak/
 env.bak/
 myenv/
 backend/venv/
+.env
 
 # Python compiled files
 __pycache__/
