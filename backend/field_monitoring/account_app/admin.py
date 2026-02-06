@@ -27,7 +27,6 @@ class CustomUserCreationForm(forms.ModelForm):
             'role',
             'phone_number',
             'survey_types',
-            'is_staff',
             'is_active',
         ]
 
@@ -68,13 +67,13 @@ class CustomUserAdmin(BaseUserAdmin):
     # inlines = (ProfileInline,)  # optional
 
     list_display = ('email', 'username', 'first_name', 'last_name', 'phone_number','role')
-    list_filter = ('role', 'is_staff','is_active')
+    list_filter = ('role', 'is_active')
 
     fieldsets = (
         (None, {'fields': ('email', 'username', 'password')}),
         ('Personal Info', {'fields': ('first_name', 'last_name', 'phone_number')}),
         ('Role & Surveys', {'fields': ('role', 'survey_types', )}),  # checkboxes for survey_types
-        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
+        ('Permissions', {'fields': ('is_active', 'is_superuser', 'groups', 'user_permissions')}),
     )
 
     add_fieldsets = (
@@ -84,9 +83,7 @@ class CustomUserAdmin(BaseUserAdmin):
         }),
          (('Permissions'), {
             'fields': (
-                'is_staff',
                 'is_active',
-                'is_superuser',
                 'groups',
                 'user_permissions',
             )
