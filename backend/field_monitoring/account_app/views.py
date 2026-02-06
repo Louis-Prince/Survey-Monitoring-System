@@ -22,6 +22,9 @@ from .serializers import (
     ResetPasswordConfirmSerializer
 )
 
+import logging
+from django.contrib.auth import get_user_model
+
 
 User = get_user_model()
 
@@ -105,7 +108,7 @@ def register_view(request):
     return render(request, 'account_app/register.html')
 
 @api_view(['POST'])
-@permission_classes([IsAdminUser])
+@permission_classes([AllowAny])
 def create_user_api(request):
     email = request.data.get('email')
     username = request.data.get('username')
@@ -165,20 +168,11 @@ Click this link to reset your password:\n{reset_link}""",
             pass
 
         return Response({"success": True, "message": "If this email exists, a password reset link has been sent."}, status=200)
-
-class ResetPasswordConfirmView(APIView):
-    permission_classes = [AllowAny]
-
-    def post(self, request):
-        serializer = ResetPasswordConfirmSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"success": True, "message": "Password reset successful"}, status=200)
-        return Response(serializer.errors, status=400)
-
+  
 # -------------------------------
 # User management
 # -------------------------------
+
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def list_users_view(request):
@@ -210,8 +204,8 @@ def create_user_view(request):
     survey_types = data.get("surveys", [])
     send_invite = data.get("send_email_invitation", True)
 
-    if not username or User.objects.filter(username=username).exists():
-        return Response({"success": False, "message": "Username already exists"}, status=400)
+    # if not username or User.objects.filter(username=username).exists():
+    #     return Response({"success": False, "message": "Username already exists"}, status=400)
     if not email or User.objects.filter(email=email).exists():
         return Response({"success": False, "message": "Email  already exists"}, status=400)
 
@@ -250,6 +244,62 @@ def create_user_view(request):
     }
 
     return Response({"success": True, "message": "User created successfully", "data": response_data}, status=201)
+  # ===============================
+# Update User
+# ===============================
+User = get_user_model()
+
+@api_view(['PUT'])
+@permission_classes([AllowAny])
+def update_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)  # get the existing user
+    except User.DoesNotExist:
+        return Response({"success": False, "message": "User not found"}, status=404)
+
+    # Update the existing user instance
+    serializer = UserSerializer(user, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()  # <-- saves changes to the same instance
+        return Response({"success": True, "message": "User updated successfully", "data": serializer.data})
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# ===============================
+# Delete User
+# ===============================
+User = get_user_model()
+
+@api_view(['DELETE'])
+@permission_classes([AllowAny])
+def delete_user(request, user_id):
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+        return Response(
+            {"success": False, "message": "User not found"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    user.delete()
+
+    return Response(
+        {"message": "User deleted successfully"},
+        status=status.HTTP_200_OK
+    )
+ 
+
+class ResetPasswordConfirmView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ResetPasswordConfirmSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"success": True, "message": "Password reset successful"}, status=200)
+        return Response(serializer.errors, status=400)
+
 # -------------------------------
 # Survey assignment
 # -------------------------------
