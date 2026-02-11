@@ -1,14 +1,13 @@
 from django.urls import path
 from . import views
 from .views import (
-    create_user_view, create_user_api, list_users_view,
+    create_user_api, list_users_view,
     update_user, delete_user, me_view, assign_survey_view,
     ChangePasswordView, LoginView, ForgotPasswordView,
     ResetPasswordConfirmView
 )
 
 urlpatterns = [
-    path('create/', create_user_view, name='create_user_simple'),
     path('create-user/', create_user_api, name='create_user_api'),
     path('users/', list_users_view, name='list_users'),
     path('update-user/<int:user_id>/', update_user, name='update_user'),

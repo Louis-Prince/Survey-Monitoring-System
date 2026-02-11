@@ -70,11 +70,36 @@ class UserSerializer(serializers.ModelSerializer):
         many=True,
         required=False
     )
-
+    # password = serializers.CharField(write_only=True)
+    
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'role', 'survey_types', 'surveys', 'is_active', 'is_staff']
+        fields = ['id',
+                  'username',
+                  'email',
+                  'first_name',
+                  'last_name', 
+                  'phone_number', 
+                  'role', 
+                  'survey_types', 
+                  'surveys', 
+                  'is_active', 
+                  'is_staff'
+                  ]
+        
+    def create(self, validated_data):
+        surveys = validated_data.pop('surveys', [])
+        password = validated_data.pop('password', None)
 
+        user = User.objects.create_user(
+            password=password,
+            **validated_data
+        )
+
+        if surveys:
+            user.surveys.set(surveys)
+
+        return user
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
