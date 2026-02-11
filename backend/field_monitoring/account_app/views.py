@@ -14,6 +14,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
 from surveys_app.models import Survey
+from django.utils.crypto import get_random_string
 from .serializers import (
     ChangePasswordSerializer,
     UserSerializer,
@@ -55,7 +56,7 @@ class ChangePasswordView(APIView):
         return Response(
             {
                 "success": False,
-                "error": error_msg
+                "message": error_msg
             },
             status=status.HTTP_400_BAD_REQUEST
         )
@@ -107,33 +108,85 @@ def logout_view(request):
 def register_view(request):
     return render(request, 'account_app/register.html')
 
+User = get_user_model()
+
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_user_api(request):
-    email = request.data.get('email')
-    username = request.data.get('username')
+    data = request.data
+    email = data.get("email")
+    username = data.get("username")
+    first_name = data.get("first_name", "")
+    last_name = data.get("last_name", "")
+    phone_number = data.get("phone_number", "")
+    role = data.get("role", "ENUMERATOR")
+    survey_types = data.get("survey_types", [])
+    send_invite = data.get("send_email_invitation", True)
+
+    # Check required fields
     if not email or not username:
-        return Response({"error": "email and username required"}, status=400)
+        return Response({"success": False, "message": "Email and username are required"}, status=400)
+
+    # Check if user/email already exists
+    if User.objects.filter(email=email).exists():
+        return Response({"success": False, "message": "Email already exists"}, status=400)
     if User.objects.filter(username=username).exists():
-        return Response({"error": "User already exists"}, status=400)
+        return Response({"success": False, "message": "Username already exists"}, status=400)
 
-    from django.utils.crypto import get_random_string
-    password = get_random_string(8)
-    user = User.objects.create_user(username=username, email=email, password=password)
-
-    send_mail(
-        subject="Your Account Credentials",
-        message=f"Username: {username}\nPassword: {password}",
-        from_email=settings.DEFAULT_FROM_EMAIL,
-        recipient_list=[email],
-        fail_silently=False,
+    # Generate password and create user
+    password = get_random_string(10)
+    user = User.objects.create_user(
+        username=username,
+        email=email,
+        password=password,
+        first_name=first_name,
+        last_name=last_name,
+        phone_number=phone_number,
+        role=role,
+        is_active=True
     )
 
-    return Response({
-        "message": "User created successfully",
-        "user": UserSerializer(user).data
-    })
+    if survey_types:
+        if isinstance(survey_types, str):
+            user.survey_types = [survey_types]
+        else:
+            user.survey_types = survey_types
+    user.save()
 
+    # Send email invitation if requested
+    if send_invite:
+        try:
+            send_mail(
+                subject="Your Account Credentials",
+                message=f"Hello {first_name},\n\nYour account has been created.\nEmail: {email}\nPassword: {password}\nYou must change your password via this link \n\nRegards,\nAdmin Team",
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            # If email fails, just log or include message in response
+            return Response({
+                "success": False,
+                "message": f"User created, but failed to send email: {str(e)}"
+            }, status=201)
+
+    # Prepare response
+    response_data = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "phone_number": user.phone_number,
+        "role": user.role,
+        "survey_types": user.survey_types
+    }
+
+    return Response({
+        "success": True,
+        "message": "User created successfully",
+        "data": response_data
+    }, status=201)
 # -------------------------------
 # Password management
 # -------------------------------
@@ -190,60 +243,8 @@ def me_view(request):
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=404)
-    return Response(UserSerializer(user).data)
+    return Response(UserSerializer(user).data) 
 
-@api_view(['POST'])
-@permission_classes([AllowAny])
-def create_user_view(request):
-    data = request.data
-    email = data.get("email")
-    username = data.get("username")
-    first_name = data.get("first_name", "")
-    last_name = data.get("last_name", "")
-    role = data.get("role", "ENUMERATOR")
-    survey_types = data.get("surveys", [])
-    send_invite = data.get("send_email_invitation", True)
-
-    # if not username or User.objects.filter(username=username).exists():
-    #     return Response({"success": False, "message": "Username already exists"}, status=400)
-    if not email or User.objects.filter(email=email).exists():
-        return Response({"success": False, "message": "Email  already exists"}, status=400)
-
-    from django.utils.crypto import get_random_string
-    password = get_random_string(10)
-
-    user = User.objects.create_user(
-        username=username,
-        email=email,
-        password=password,
-        first_name=first_name,
-        last_name=last_name,
-        role=role,
-        is_active=True
-    )
-    if survey_types:
-        user.survey_types = survey_types
-    user.save()
-
-    if send_invite:
-        send_mail(
-            subject="Your Account Credentials",
-            message=f"Hello {first_name},\n\nYour account has been created.\nEmail: {email}\nPassword: {password}\n\nRegards,\nAdmin Team",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[email],
-            fail_silently=False,
-        )
-
-    # Define the response directly in the view
-    response_data = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "role": user.role,
-        "survey_types": user.survey_types
-    }
-
-    return Response({"success": True, "message": "User created successfully", "data": response_data}, status=201)
   # ===============================
 # Update User
 # ===============================

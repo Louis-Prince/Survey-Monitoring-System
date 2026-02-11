@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ENUMERATOR')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ADMIN')
     is_temporary_password = models.BooleanField(default=True)
 
     # Permissions
