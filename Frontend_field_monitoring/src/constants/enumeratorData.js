@@ -1,0 +1,65 @@
+export const enumeratorData = [
+  {
+    id: "EN001",
+    name: "MUGISHA Emma",
+    survey: "SAS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: "EN002",
+    name: "MATWI Alba",
+    survey: "DHS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: 'EN003',
+    name: 'Happy',
+    survey: 'SAS',
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: "EN004",
+    name: "MUGISHA Emma",
+    survey: "SAS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: "EN005",
+    name: "MATWI Alba",
+    survey: "DHS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: 'EN006',
+    name: 'Happy',
+    survey: 'SAS',
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: "EN007",
+    name: "MUGISHA Emma",
+    survey: "SAS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: "EN008",
+    name: "MATWI Alba",
+    survey: "DHS",
+    completed: 140,
+    total: 165,
+  },
+  {
+    id: 'EN009',
+    name: 'Happy',
+    survey: 'SAS',
+    completed: 140,
+    total: 165,
+  }
+];

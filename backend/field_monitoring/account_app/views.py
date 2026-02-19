@@ -91,8 +91,8 @@ class LoginView(APIView):
                 "access_token": str(refresh.access_token),
                 "refresh_token": str(refresh),
                 "email": user.email,
-                "is_temporary_password":user.is_temporary_password,
-                "Role": user.role,
+                "is_temporary_password": user.is_temporary_password,
+                "role": user.role,
             }
         }, status=status.HTTP_200_OK)
 # -------------------------------
@@ -115,7 +115,7 @@ User = get_user_model()
 def create_user_api(request):
     data = request.data
     email = data.get("email")
-    username = data.get("username")
+    # username = data.get("username")
     first_name = data.get("first_name", "")
     last_name = data.get("last_name", "")
     phone_number = data.get("phone_number", "")
@@ -124,19 +124,17 @@ def create_user_api(request):
     send_invite = data.get("send_email_invitation", True)
 
     # Check required fields
-    if not email or not username:
-        return Response({"success": False, "message": "Email and username are required"}, status=400)
+    if not email:
+        return Response({"success": False, "message": "Email is required"}, status=400)
 
     # Check if user/email already exists
     if User.objects.filter(email=email).exists():
         return Response({"success": False, "message": "Email already exists"}, status=400)
-    if User.objects.filter(username=username).exists():
-        return Response({"success": False, "message": "Username already exists"}, status=400)
+
 
     # Generate password and create user
     password = get_random_string(10)
     user = User.objects.create_user(
-        username=username,
         email=email,
         password=password,
         first_name=first_name,
@@ -158,7 +156,7 @@ def create_user_api(request):
         try:
             send_mail(
                 subject="Your Account Credentials",
-                message=f"Hello {first_name},\n\nYour account has been created.\nEmail: {email}\nPassword: {password}\nYou must change your password via this link \n\nRegards,\nAdmin Team",
+                message=f"Hello {first_name},\n\nYour account has been created.\nEmail: {email}\nPassword: {password}\n\nClick the link below to login:\n{settings.FRONTEND_URL}/ \n\nRegards,\nAdmin Team",
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 recipient_list=[email],
                 fail_silently=False,
@@ -173,7 +171,6 @@ def create_user_api(request):
     # Prepare response
     response_data = {
         "id": user.id,
-        "username": user.username,
         "email": user.email,
         "first_name": user.first_name,
         "last_name": user.last_name,
@@ -203,7 +200,7 @@ class ForgotPasswordView(APIView):
             user = User.objects.get(email=email)
             token = PasswordResetTokenGenerator().make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
-            reset_link = f"http://localhost:3000/reset-password/{uid}/{token}/"
+            reset_link = f"{settings.FRONTEND_URL}/reset-password/{uid}/{token}/"
 
             send_mail(
                 subject="Password Reset Request",
